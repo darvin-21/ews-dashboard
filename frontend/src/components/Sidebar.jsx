@@ -34,7 +34,9 @@ export default function Sidebar({
           {/* Theme toggle removed: dark mode disabled for this prototype. */}
         </div>
         <p className="mt-1 text-xs text-ink-500 dark:text-ink-400 leading-snug">
-          Sovereign &amp; sector risk from public macro sources. Every score links back to its source.
+          Live sovereign &amp; sector risk built on public macro feeds — <strong>World Bank</strong>,
+          <strong> IMF</strong>, <strong>ECB</strong>, <strong>BIS</strong>, <strong>OECD</strong>,
+          <strong> FRED</strong>, plus news RSS — refreshed on a schedule. Every score links back to its source.
         </p>
         <p className="mt-2 text-[11px] text-ink-500 dark:text-ink-400 font-medium">
           Prepared by Arvind Sharma

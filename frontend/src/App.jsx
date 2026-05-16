@@ -254,9 +254,11 @@ export default function App() {
             <MethodologyPage indicatorsCatalog={indicatorsCatalog} sourcesSummary={sourcesSummary} />
           )}
 
-          <footer className="text-[10px] text-ink-400 text-center py-4">
-            Public-data prototype. Not investment advice. Sources are linked on every panel.
-            Built with FastAPI + React + SQLite. Prepared by Arvind Sharma.
+          <footer className="text-[10px] text-ink-400 text-center py-4 leading-relaxed">
+            Live public-data prototype — pulls macro indicators from World Bank, IMF, ECB, BIS, OECD &amp; FRED
+            and news from public RSS feeds, refreshed automatically (annual sources once/year, news every 30 min).
+            Every score links back to its source. Not investment advice.
+            <br/>Built with FastAPI + React + SQLite · Prepared by Arvind Sharma.
           </footer>
         </main>
       </div>
