@@ -68,10 +68,10 @@ class RiskAssessment:
 
 
 BANDS = [
-    (0, 25, "low"),
-    (26, 50, "moderate"),
-    (51, 75, "high"),
-    (76, 100, "critical"),
+    (0, 40, "low"),
+    (41, 70, "moderate"),
+    (71, 90, "high"),
+    (91, 100, "critical"),
 ]
 
 

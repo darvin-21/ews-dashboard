@@ -19,8 +19,8 @@ export default function MethodologyPage({ indicatorsCatalog, sourcesSummary }) {
           <li>Take a weighted average of bucket risks. Yield curve & US policy rate are only applied to the US.</li>
         </ol>
         <p className="mt-3 text-xs text-ink-500">
-          Bands: <span className="num">0–25 Low</span> · <span className="num">26–50 Moderate</span> ·
-          {" "}<span className="num">51–75 High</span> · <span className="num">76–100 Critical</span>.
+          Bands: <span className="num">0–40 Low</span> · <span className="num">41–70 Moderate</span> ·
+          {" "}<span className="num">71–90 High</span> · <span className="num">91–100 Critical</span>.
         </p>
       </div>
 

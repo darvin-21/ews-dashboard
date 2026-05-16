@@ -2,9 +2,9 @@
 
 export function bandFor(score) {
   if (score == null || Number.isNaN(score)) return "unknown";
-  if (score <= 25) return "low";
-  if (score <= 50) return "moderate";
-  if (score <= 75) return "high";
+  if (score <= 40) return "low";
+  if (score <= 70) return "moderate";
+  if (score <= 90) return "high";
   return "critical";
 }
 
