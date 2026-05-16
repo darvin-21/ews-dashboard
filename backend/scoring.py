@@ -308,7 +308,7 @@ def compute_risk(
                     direction_of_change=None, yoy_change=None, confidence=0.0,
                     notes=indicator["notes"], available=False,
                     unavailability_reason=(
-                        f"Not available for {country_iso3}.""
+                        f"Not available for {country_iso3}."
                     ),
                 )
             )
