@@ -95,13 +95,19 @@ def _bucket_risk(value: float, indicator: dict) -> float:
 
 
 def _latest_obs(
-    db: Session, country_iso3: str, indicator_code: str
+    db: Session,
+    country_iso3: str,
+    indicator_code: str,
+    to_year: Optional[int] = None,
 ) -> Tuple[Optional[IndicatorObservation], Optional[IndicatorObservation]]:
     """Return (latest, prior) observations with non-null values.
 
     For IMF WEO series we get forecasts that extend ~5y into the future.
     We prefer the latest *non-projection* observation (period <= current year + 1),
     falling back to the absolute latest if nothing else is available.
+
+    If to_year is set, the latest observation must have period year <= to_year
+    (the dashboard's "as-of" filter). No fallback past that cutoff.
     """
     stmt = (
         select(IndicatorObservation)
@@ -118,7 +124,7 @@ def _latest_obs(
     rows = db.execute(stmt).scalars().all()
     if not rows:
         return None, None
-    cutoff_year = dt.datetime.utcnow().year + 1  # accept current-year nowcast
+    cutoff_year = to_year if to_year is not None else dt.datetime.utcnow().year + 1
     filtered = []
     for r in rows:
         try:
@@ -280,6 +286,7 @@ def compute_risk(
     country_iso3: str,
     sector_code: str = "macro",
     selected_indicator_codes: Optional[List[str]] = None,
+    to_year: Optional[int] = None,
 ) -> RiskAssessment:
     codes = selected_indicator_codes or _indicator_codes_for(sector_code)
 
@@ -297,7 +304,7 @@ def compute_risk(
         # private_credit_growth is derived from credit_to_gdp -> needs latest + prior of that series
         if code == "private_credit_growth":
             base_ind = INDICATOR_BY_CODE["credit_to_gdp"]
-            latest, prior = _latest_obs(db, country_iso3, base_ind["code"])
+            latest, prior = _latest_obs(db, country_iso3, base_ind["code"], to_year=to_year)
             if latest and prior and latest.value is not None and prior.value is not None:
                 derived_value = latest.value - prior.value
                 bucket_risk = _bucket_risk(derived_value, indicator)
@@ -343,7 +350,7 @@ def compute_risk(
                 )
             continue
 
-        latest, prior = _latest_obs(db, country_iso3, code)
+        latest, prior = _latest_obs(db, country_iso3, code, to_year=to_year)
         source_url = indicator["source_url_template"].format(iso3=country_iso3) if "{iso3}" in indicator["source_url_template"] else indicator["source_url_template"]
 
         if latest is None or latest.value is None:

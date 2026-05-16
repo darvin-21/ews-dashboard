@@ -81,10 +81,11 @@ export default function App() {
       country: filters.country,
       sector: filters.sector,
       indicators: filters.indicators?.length ? filters.indicators : undefined,
+      toYear: filters.toYear,
     })
       .then(setAssessment)
       .catch(console.error);
-  }, [filters.country, filters.sector, filters.indicators.join(","), countries.length]);
+  }, [filters.country, filters.sector, filters.indicators.join(","), filters.toYear, countries.length]);
 
   // News fetch (shared for timeline + feed)
   useEffect(() => {
@@ -123,7 +124,8 @@ export default function App() {
         try {
           const [a, n, sum] = await Promise.all([
             api.assess({ country: filters.country, sector: filters.sector,
-                         indicators: filters.indicators?.length ? filters.indicators : undefined }),
+                         indicators: filters.indicators?.length ? filters.indicators : undefined,
+                         toYear: filters.toYear }),
             api.news({ country: filters.country, limit: 50 }),
             api.sourcesSummary(),
           ]);

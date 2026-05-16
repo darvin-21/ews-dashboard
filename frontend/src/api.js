@@ -34,8 +34,8 @@ export const api = {
     get("/api/indicators/series", { country, code, from, to }),
   heatmap: ({ countries, codes }) =>
     get("/api/indicators/heatmap", { countries, codes }),
-  assess: ({ country, sector, indicators }) =>
-    get("/api/risk/assess", { country, sector, indicators }),
+  assess: ({ country, sector, indicators, toYear }) =>
+    get("/api/risk/assess", { country, sector, indicators, to_year: toYear }),
   news: ({ country, keywords, limit }) =>
     get("/api/news/feed", { country, keywords, limit }),
   sourcesLog: ({ limit }) => get("/api/sources/log", { limit }),
