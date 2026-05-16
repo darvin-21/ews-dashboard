@@ -259,6 +259,17 @@ def _direction_of_change(
     return ("improving" if delta > 0 else "deteriorating"), delta
 
 
+def _unavailability_reason(indicator: dict, country_iso3: str) -> str:
+    """Context-aware reason text for why an indicator has no value."""
+    source = indicator.get("source", "")
+    code = indicator.get("code", "")
+    if source == "FRED":
+        return "Requires FRED API key (free, 1-min signup at fred.stlouisfed.org)."
+    if code == "external_debt_gni":
+        return "Reported only for low- and middle-income economies."
+    return f"Not available for {country_iso3}."
+
+
 def compute_risk(
     db: Session,
     country_iso3: str,
@@ -340,9 +351,7 @@ def compute_risk(
                     direction=indicator["direction"], weight_used=0.0, bucket_risk=None,
                     direction_of_change=None, yoy_change=None, confidence=0.0,
                     notes=indicator["notes"], available=False,
-                    unavailability_reason=(
-                        f"Not available for {country_iso3}."
-                    ),
+                    unavailability_reason=_unavailability_reason(indicator, country_iso3),
                 )
             )
             continue
