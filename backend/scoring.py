@@ -263,10 +263,15 @@ def _unavailability_reason(indicator: dict, country_iso3: str) -> str:
     """Context-aware reason text for why an indicator has no value."""
     source = indicator.get("source", "")
     code = indicator.get("code", "")
-    if source == "FRED":
-        return "Requires FRED API key (free, 1-min signup at fred.stlouisfed.org)."
+    # US-only FRED series (Fed funds rate, US Treasury 10Y-2Y spread)
+    if code in ("policy_rate", "us_curve_10y_2y") and country_iso3 != "USA":
+        return "US-only indicator; not applicable for this country."
+    # World Bank IDS: only reported for low/middle-income economies
     if code == "external_debt_gni":
         return "Reported only for low- and middle-income economies."
+    # FRED data missing despite key — true data gap
+    if source == "FRED":
+        return "Not currently in the FRED cache for this country."
     return f"Not available for {country_iso3}."
 
 
