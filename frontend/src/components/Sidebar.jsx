@@ -75,9 +75,21 @@ export default function Sidebar({
         </div>
 
         <div>
-          <label className="panel-title block mb-1">
-            Time period (annual indicators)
-          </label>
+          <label className="panel-title block mb-1">As-of year (score)</label>
+          <input
+            type="number" min="1970" max="2030"
+            className="w-full bg-ink-50 dark:bg-ink-900 border border-ink-200 dark:border-ink-700 rounded px-2 py-1.5 text-sm num"
+            value={filters.toYear}
+            onChange={(e) => update({ toYear: Number(e.target.value) })}
+          />
+          <p className="mt-1 text-[10px] text-ink-500 leading-snug">
+            Composite score &amp; warning signals use the latest observation up to this year.
+            Try 2010 to see post-GFC, 2020 to see COVID-era.
+          </p>
+        </div>
+
+        <div>
+          <label className="panel-title block mb-1">Chart range (charts tab)</label>
           <div className="flex gap-2 items-center">
             <input
               type="number" min="1970" max="2030"
@@ -90,9 +102,13 @@ export default function Sidebar({
               type="number" min="1970" max="2030"
               className="w-1/2 bg-ink-50 dark:bg-ink-900 border border-ink-200 dark:border-ink-700 rounded px-2 py-1.5 text-sm num"
               value={filters.toYear}
-              onChange={(e) => update({ toYear: Number(e.target.value) })}
+              readOnly
+              title="Mirrors the as-of year above"
             />
           </div>
+          <p className="mt-1 text-[10px] text-ink-500 leading-snug">
+            Sets the x-axis on the Indicators &amp; charts tab.
+          </p>
         </div>
 
         <div>
