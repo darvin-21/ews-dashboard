@@ -1,0 +1,36 @@
+# Render Blueprint — deploys backend + frontend with one click.
+# Free tier. Spin-up after idle takes ~30s.
+# Docs: https://render.com/docs/blueprint-spec
+
+services:
+  - type: web
+    name: ews-backend
+    runtime: docker
+    plan: free
+    rootDir: backend
+    dockerfilePath: ./Dockerfile
+    healthCheckPath: /api/health
+    envVars:
+      - key: CORS_ORIGINS
+        value: "*"      # locked to render.com hosts by the wildcard regex in main.py
+      - key: FRED_API_KEY
+        sync: false     # set this in the Render dashboard if you have one
+      - key: DATABASE_URL
+        value: sqlite:////var/data/ews_cache.db
+    disk:
+      name: ews-data
+      mountPath: /var/data
+      sizeGB: 1
+
+  - type: web
+    name: ews-frontend
+    runtime: docker
+    plan: free
+    rootDir: frontend
+    dockerfilePath: ./Dockerfile.render
+    envVars:
+      - key: VITE_API_BASE
+        fromService:
+          name: ews-backend
+          type: web
+          property: hostport   # injected at build time as e.g. ews-backend.onrender.com

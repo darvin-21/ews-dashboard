@@ -1,0 +1,52 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html,
+  body,
+  #root {
+    height: 100%;
+  }
+  body {
+    font-feature-settings: "ss01", "cv01", "tnum";
+  }
+  .num {
+    font-variant-numeric: tabular-nums;
+    font-family: "JetBrains Mono", ui-monospace, monospace;
+  }
+  .display {
+    font-family: "Fraunces", ui-serif, Georgia, serif;
+    letter-spacing: -0.01em;
+  }
+}
+
+@layer components {
+  .panel {
+    @apply rounded-lg border border-ink-200 bg-white shadow-panel dark:border-ink-700 dark:bg-ink-800;
+  }
+  .panel-pad {
+    @apply p-4 lg:p-5;
+  }
+  .panel-title {
+    @apply text-xs uppercase tracking-wider font-medium text-ink-500 dark:text-ink-400;
+  }
+  .chip {
+    @apply inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-xs font-medium;
+  }
+  .chip-risk-low { @apply bg-emerald-100 text-emerald-800 dark:bg-emerald-900/40 dark:text-emerald-300; }
+  .chip-risk-moderate { @apply bg-amber-100 text-amber-800 dark:bg-amber-900/40 dark:text-amber-300; }
+  .chip-risk-high { @apply bg-orange-100 text-orange-800 dark:bg-orange-900/40 dark:text-orange-300; }
+  .chip-risk-critical { @apply bg-red-100 text-red-900 dark:bg-red-900/40 dark:text-red-200; }
+  .chip-risk-unknown { @apply bg-ink-100 text-ink-600 dark:bg-ink-700 dark:text-ink-300; }
+  .link-quiet { @apply underline decoration-ink-300 underline-offset-2 hover:text-accent hover:decoration-accent dark:decoration-ink-600; }
+}
+
+/* Subtle grain for the body background */
+body {
+  background-image: radial-gradient(rgba(0, 0, 0, 0.018) 1px, transparent 1px);
+  background-size: 4px 4px;
+}
+.dark body {
+  background-image: radial-gradient(rgba(255, 255, 255, 0.025) 1px, transparent 1px);
+}

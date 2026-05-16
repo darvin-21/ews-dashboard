@@ -1,0 +1,17 @@
+FROM node:20-alpine AS build
+WORKDIR /app
+COPY package*.json ./
+RUN npm install --no-audit --no-fund
+COPY . .
+
+# Render injects VITE_API_BASE at build time pointing to the backend service.
+ARG VITE_API_BASE
+ENV VITE_API_BASE=https://${VITE_API_BASE}
+RUN npm run build
+
+# Serve the built static site. Render free web services listen on $PORT.
+FROM node:20-alpine
+WORKDIR /app
+RUN npm install --global serve@14
+COPY --from=build /app/dist ./dist
+CMD ["sh", "-c", "serve -s dist -l ${PORT:-10000}"]
