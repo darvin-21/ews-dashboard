@@ -25,11 +25,10 @@ const TABS = [
 
 export default function App() {
   // Theme
-  const [dark, setDark] = useState(
-    typeof window !== "undefined" && window.matchMedia?.("(prefers-color-scheme: dark)").matches
-  );
+  // Light-only for now; dark theme needs more polish.
+  const [dark, setDark] = useState(false);
   useEffect(() => {
-    document.documentElement.classList.toggle("dark", dark);
+    document.documentElement.classList.remove("dark");
   }, [dark]);
 
   // Catalog

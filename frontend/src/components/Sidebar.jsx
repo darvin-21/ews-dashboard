@@ -31,13 +31,7 @@ export default function Sidebar({
       <div className="panel panel-pad">
         <div className="flex items-baseline justify-between">
           <h1 className="display text-2xl">Early Warning</h1>
-          <button
-            onClick={() => setDark((v) => !v)}
-            className="text-xs text-ink-500 hover:text-ink-800 dark:hover:text-ink-100"
-            title="Toggle theme"
-          >
-            {dark ? "☼ Light" : "☾ Dark"}
-          </button>
+          {/* Theme toggle removed: dark mode disabled for this prototype. */}
         </div>
         <p className="mt-1 text-xs text-ink-500 dark:text-ink-400 leading-snug">
           Sovereign &amp; sector risk from public macro sources. Every score links back to its source.

@@ -67,7 +67,7 @@ def get_series(
         "available": bool(points),
         "unavailability_reason": (
             None if points else
-            f"No cached observations. Try POST /api/admin/refresh, or check {indicator['source']} directly."
+            "Not available for this country/indicator."
         ),
     }
 

@@ -308,9 +308,7 @@ def compute_risk(
                     direction_of_change=None, yoy_change=None, confidence=0.0,
                     notes=indicator["notes"], available=False,
                     unavailability_reason=(
-                        f"No cached observation for {country_iso3}. "
-                        f"Check {indicator['source']} at the source link, "
-                        f"or run the /admin/refresh endpoint."
+                        f"Not available for {country_iso3}.""
                     ),
                 )
             )

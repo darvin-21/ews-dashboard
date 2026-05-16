@@ -124,7 +124,7 @@ export function FullIndicatorTable({ assessment, onPickSource }) {
               <div className="text-[10px] text-ink-400">{i.source}</div>
             </div>
             <div className="col-span-6 text-sm text-ink-500 italic">
-              Data unavailable — {i.unavailability_reason || "no observation"}
+              {i.unavailability_reason || "Not available"}
             </div>
             <div className="col-span-1 text-right">
               <button onClick={() => onPickSource(i)} className="text-[10px] underline decoration-ink-300 hover:text-accent">src</button>
