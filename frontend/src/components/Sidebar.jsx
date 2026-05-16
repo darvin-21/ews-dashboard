@@ -42,6 +42,9 @@ export default function Sidebar({
         <p className="mt-1 text-xs text-ink-500 dark:text-ink-400 leading-snug">
           Sovereign &amp; sector risk from public macro sources. Every score links back to its source.
         </p>
+        <p className="mt-2 text-[11px] text-ink-500 dark:text-ink-400 font-medium">
+          Prepared by Arvind Sharma
+        </p>
       </div>
 
       <div className="panel panel-pad space-y-3">

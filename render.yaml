@@ -28,7 +28,6 @@ services:
     dockerfilePath: ./Dockerfile.render
     envVars:
       - key: VITE_API_BASE
-        fromService:
-          name: ews-backend
-          type: web
-          property: hostport   # injected at build time as e.g. ews-backend.onrender.com
+        # Hardcoded because Render's fromService:hostport isn't passed to Docker build args.
+        # Update this if you rename the backend service or it gets a different suffix.
+        value: https://ews-backend-3mhh.onrender.com

@@ -5,9 +5,10 @@ RUN npm install --no-audit --no-fund
 COPY . .
 
 # Render injects VITE_API_BASE at build time pointing to the backend service.
+# Render passes envVars to the Docker build as both env AND build args.
 ARG VITE_API_BASE
-ENV VITE_API_BASE=https://${VITE_API_BASE}
-RUN npm run build
+ENV VITE_API_BASE=${VITE_API_BASE}
+RUN echo "Building with VITE_API_BASE=${VITE_API_BASE}" && npm run build
 
 # Serve the built static site. Render free web services listen on $PORT.
 FROM node:20-alpine

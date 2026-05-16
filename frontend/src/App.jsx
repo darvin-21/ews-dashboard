@@ -257,7 +257,7 @@ export default function App() {
 
           <footer className="text-[10px] text-ink-400 text-center py-4">
             Public-data prototype. Not investment advice. Sources are linked on every panel.
-            Built with FastAPI + React + SQLite.
+            Built with FastAPI + React + SQLite. Prepared by Arvind Sharma.
           </footer>
         </main>
       </div>
