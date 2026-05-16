@@ -16,11 +16,9 @@ services:
       - key: FRED_API_KEY
         sync: false     # set this in the Render dashboard if you have one
       - key: DATABASE_URL
-        value: sqlite:////var/data/ews_cache.db
-    disk:
-      name: ews-data
-      mountPath: /var/data
-      sizeGB: 1
+        value: sqlite:////tmp/ews_cache.db
+    # Render free tier doesn't support persistent disks; SQLite lives in /tmp
+    # and is recreated on each deploy. Data refetches automatically.
 
   - type: web
     name: ews-frontend
