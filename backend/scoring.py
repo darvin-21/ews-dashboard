@@ -179,15 +179,48 @@ def _freshness_weight(latest: Optional[IndicatorObservation], frequency: str) ->
     return 0.4
 
 
+# Per-sector indicator universes. Macro shows the full stack; everything else
+# narrows to indicators that actually move the needle for that sector, so the
+# score / panels visibly change when the user flips the dropdown.
+_SECTOR_INDICATOR_SETS = {
+    "macro": None,  # None = full stack
+    "banking": [
+        "gdp_growth", "inflation_cpi", "unemployment",
+        "gov_debt_gdp", "fiscal_balance_gdp",
+        "credit_to_gdp", "private_credit_growth", "policy_rate",
+        "us_curve_10y_2y",
+    ],
+    "energy": [
+        "gdp_growth", "inflation_cpi",
+        "current_account_gdp", "gov_debt_gdp", "reserves_months_imports",
+        "brent_price", "natgas_henry_hub",
+    ],
+    "trade": [
+        "gdp_growth", "inflation_cpi",
+        "exports_goods_services_pct_gdp", "current_account_gdp", "reer",
+        "reserves_months_imports", "external_debt_gni",
+    ],
+    "construction": [
+        "gdp_growth", "inflation_cpi", "unemployment",
+        "credit_to_gdp", "private_credit_growth", "policy_rate",
+    ],
+    "manufacturing": [
+        "gdp_growth", "inflation_cpi", "unemployment",
+        "exports_goods_services_pct_gdp", "current_account_gdp", "reer",
+    ],
+    "tech": [
+        "gdp_growth", "inflation_cpi", "unemployment",
+        "policy_rate", "us_curve_10y_2y",
+    ],
+}
+
+
 def _indicator_codes_for(sector_code: str) -> List[str]:
-    """Codes to evaluate for a sector. Macro stack + sector overlay (deduped)."""
-    macro_stack = [ind["code"] for ind in INDICATORS]  # the full catalog
-    sector = SECTOR_BY_CODE.get(sector_code)
-    if not sector:
-        return macro_stack
-    overlay = sector.get("indicator_overlay", []) or []
-    # Macro stack already includes everything; overlay is just emphasising weights.
-    return macro_stack
+    """Indicators evaluated for a given sector. Narrower than the full stack
+    for non-macro sectors so the score and panels change meaningfully."""
+    if sector_code in _SECTOR_INDICATOR_SETS and _SECTOR_INDICATOR_SETS[sector_code] is not None:
+        return list(_SECTOR_INDICATOR_SETS[sector_code])
+    return [ind["code"] for ind in INDICATORS]
 
 
 def _weight_adjustment(indicator: dict, country_iso3: str, sector_code: str) -> float:
@@ -202,10 +235,10 @@ def _weight_adjustment(indicator: dict, country_iso3: str, sector_code: str) -> 
     # Policy rate via FRED is US fed funds — only applies to USA
     if indicator["code"] == "policy_rate" and country_iso3 != "USA":
         w = 0.0
-    # Sector overlay boost
+    # Sector overlay boost (stronger so sector switches move the score visibly)
     sector = SECTOR_BY_CODE.get(sector_code, {})
     if indicator["code"] in (sector.get("indicator_overlay") or []):
-        w *= 1.5
+        w *= 2.5
     return w
 
 
