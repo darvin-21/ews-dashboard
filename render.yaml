@@ -21,7 +21,7 @@ services:
     # and is recreated on each deploy. Data refetches automatically.
 
   - type: web
-    name: ews-frontend
+    name: abu-abdullah-ews
     runtime: docker
     plan: free
     rootDir: frontend
