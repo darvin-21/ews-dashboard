@@ -363,8 +363,9 @@ def _build_commentary(
     deteriorating = [s for s in indicator_scores if s.direction_of_change == "deteriorating"]
     improving = [s for s in indicator_scores if s.direction_of_change == "improving"]
 
+    country_display = country[0].upper() + country[1:] if country else country
     line1 = (
-        f"{country.capitalize()} {sector} risk is currently {band_word} "
+        f"{country_display} {sector} risk is currently {band_word} "
         f"at {composite:.1f}/100 (confidence {int(confidence*100)}% on {n_avail}/{n_total} indicators)."
     )
     line2 = f"Top drivers: {drivers}."
