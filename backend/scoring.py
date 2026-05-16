@@ -119,8 +119,11 @@ def _latest_obs(
             )
         )
         .order_by(IndicatorObservation.period.desc())
-        .limit(20)
     )
+    # Default case: cap at 20 rows for performance.
+    # to_year case: fetch all so we can filter properly without missing older rows.
+    if to_year is None:
+        stmt = stmt.limit(20)
     rows = db.execute(stmt).scalars().all()
     if not rows:
         return None, None
@@ -134,6 +137,10 @@ def _latest_obs(
         except (TypeError, ValueError):
             filtered.append(r)
     if not filtered:
+        # If user set an explicit as-of cutoff and nothing matches, return None
+        # (don't fall back to absolute latest — that would defeat the filter).
+        if to_year is not None:
+            return None, None
         filtered = rows
     latest = filtered[0]
     prior = filtered[1] if len(filtered) > 1 else None
