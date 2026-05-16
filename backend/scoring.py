@@ -65,6 +65,7 @@ class RiskAssessment:
     deteriorating: List[str]
     improving: List[str]
     computed_at: str
+    commentary: str = ""
 
 
 BANDS = [
@@ -73,6 +74,12 @@ BANDS = [
     (71, 90, "high"),
     (91, 100, "critical"),
 ]
+
+
+# Countries whose monetary regime is effectively imported from the US
+# (currency pegged to or heavily managed against USD). For these, the Fed funds
+# rate and US Treasury curve carry direct policy weight.
+USD_PEG_COUNTRIES = {"USA", "ARE", "SAU"}
 
 
 def _band(score: float) -> str:
@@ -109,6 +116,11 @@ def _latest_obs(
     If to_year is set, the latest observation must have period year <= to_year
     (the dashboard's "as-of" filter). No fallback past that cutoff.
     """
+    # Global US series (Fed funds, Treasury curve) are stored under USA only;
+    # surface them for USD-peg countries (and as a global reference for the curve).
+    if indicator_code in ("policy_rate", "us_curve_10y_2y") and country_iso3 != "USA":
+        country_iso3 = "USA"
+
     stmt = (
         select(IndicatorObservation)
         .where(
@@ -246,7 +258,7 @@ def _weight_adjustment(indicator: dict, country_iso3: str, sector_code: str) -> 
     if indicator["code"] == "us_curve_10y_2y" and country_iso3 != "USA":
         w = 0.0
     # Policy rate via FRED is US fed funds — only applies to USA
-    if indicator["code"] == "policy_rate" and country_iso3 != "USA":
+    if indicator["code"] == "policy_rate" and country_iso3 not in USD_PEG_COUNTRIES:
         w = 0.0
     # Sector overlay boost (stronger so sector switches move the score visibly)
     sector = SECTOR_BY_CODE.get(sector_code, {})
@@ -276,9 +288,7 @@ def _unavailability_reason(indicator: dict, country_iso3: str) -> str:
     """Context-aware reason text for why an indicator has no value."""
     source = indicator.get("source", "")
     code = indicator.get("code", "")
-    # US-only FRED series (Fed funds rate, US Treasury 10Y-2Y spread)
-    if code in ("policy_rate", "us_curve_10y_2y") and country_iso3 != "USA":
-        return "US-only indicator; not applicable for this country."
+    # us_curve_10y_2y is shown everywhere as a reference; policy_rate handled by filter.
     # World Bank IDS: only reported for low/middle-income economies
     if code == "external_debt_gni":
         return "Reported only for low- and middle-income economies."
@@ -286,6 +296,83 @@ def _unavailability_reason(indicator: dict, country_iso3: str) -> str:
     if source == "FRED":
         return "Not currently in the FRED cache for this country."
     return f"Not available for {country_iso3}."
+
+
+
+# Country labels for commentary
+_COUNTRY_LABEL = {
+    "USA": "the United States", "GBR": "the United Kingdom", "DEU": "Germany",
+    "FRA": "France", "ITA": "Italy", "ESP": "Spain", "JPN": "Japan",
+    "CHN": "China", "IND": "India", "KOR": "South Korea", "SGP": "Singapore",
+    "ARE": "the United Arab Emirates", "SAU": "Saudi Arabia", "TUR": "Türkiye",
+    "EGY": "Egypt", "ZAF": "South Africa", "NGA": "Nigeria",
+    "BRA": "Brazil", "MEX": "Mexico", "ARG": "Argentina",
+    "AUS": "Australia", "NZL": "New Zealand", "CAN": "Canada",
+}
+
+_SECTOR_LABEL = {
+    "macro": "macro / sovereign", "banking": "banking and financial sector",
+    "energy": "energy sector", "trade": "trade and external sector",
+    "construction": "construction and real-estate sector",
+    "manufacturing": "manufacturing sector", "tech": "technology sector",
+}
+
+_BAND_PHRASE = {
+    "low": "low", "moderate": "moderate", "high": "elevated", "critical": "critical",
+}
+
+
+def _build_commentary(
+    country_iso3: str,
+    sector_code: str,
+    composite: float,
+    band: str,
+    confidence: float,
+    indicator_scores: List[IndicatorScore],
+) -> str:
+    """Generate a 2-3 sentence narrative based on the actual indicator data."""
+    country = _COUNTRY_LABEL.get(country_iso3, country_iso3)
+    sector = _SECTOR_LABEL.get(sector_code, sector_code)
+    band_word = _BAND_PHRASE.get(band, band)
+    n_total = len(indicator_scores)
+    n_avail = sum(1 for s in indicator_scores if s.available)
+
+    # Find top 2 most-risky AVAILABLE indicators
+    available = [s for s in indicator_scores if s.available and s.bucket_risk is not None]
+    available.sort(key=lambda s: (s.bucket_risk or 0), reverse=True)
+    top = available[:2]
+
+    def fmt(s):
+        ind = INDICATOR_BY_CODE.get(s.code, {})
+        name = ind.get("name", s.code)
+        val = s.value
+        unit = s.unit or ""
+        if isinstance(val, float):
+            vs = f"{val:.2f}".rstrip("0").rstrip(".")
+        else:
+            vs = str(val)
+        return f"{name} at {vs} {unit}".strip()
+
+    if not top:
+        return (
+            f"Risk profile for {country} ({sector}) cannot be assessed — "
+            f"no indicators returned usable data. Try a different sector or check Render logs."
+        )
+
+    drivers = " and ".join(fmt(s) for s in top)
+    deteriorating = [s for s in indicator_scores if s.direction_of_change == "deteriorating"]
+    improving = [s for s in indicator_scores if s.direction_of_change == "improving"]
+
+    line1 = (
+        f"{country.capitalize()} {sector} risk is currently {band_word} "
+        f"at {composite:.1f}/100 (confidence {int(confidence*100)}% on {n_avail}/{n_total} indicators)."
+    )
+    line2 = f"Top drivers: {drivers}."
+    line3 = (
+        f"Direction of change: {len(deteriorating)} indicators deteriorating, "
+        f"{len(improving)} improving versus the prior period."
+    )
+    return " ".join([line1, line2, line3])
 
 
 def compute_risk(
@@ -305,6 +392,10 @@ def compute_risk(
     for code in codes:
         indicator = INDICATOR_BY_CODE.get(code)
         if not indicator:
+            continue
+        # Hide Fed funds rate for countries that don't peg to USD.
+        # us_curve_10y_2y stays visible everywhere as a global recession signal.
+        if code == "policy_rate" and country_iso3 not in USD_PEG_COUNTRIES:
             continue
         w = _weight_adjustment(indicator, country_iso3, sector_code)
 
@@ -429,6 +520,15 @@ def compute_risk(
     deteriorating = [s.code for s in indicator_scores if s.direction_of_change == "deteriorating"]
     improving = [s.code for s in indicator_scores if s.direction_of_change == "improving"]
 
+    commentary = _build_commentary(
+        country_iso3=country_iso3,
+        sector_code=sector_code,
+        composite=round(composite, 2),
+        band=band,
+        confidence=composite_confidence,
+        indicator_scores=indicator_scores,
+    )
+
     return RiskAssessment(
         country_iso3=country_iso3,
         sector_code=sector_code,
@@ -440,6 +540,7 @@ def compute_risk(
         deteriorating=deteriorating,
         improving=improving,
         computed_at=dt.datetime.utcnow().isoformat() + "Z",
+        commentary=commentary,
     )
 
 

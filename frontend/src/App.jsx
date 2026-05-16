@@ -198,6 +198,21 @@ export default function App() {
 
           {tab === "overview" && (
             <>
+              {assessment?.commentary && (
+                <div className="panel panel-pad bg-amber-50/40 dark:bg-amber-900/10 border-l-4 border-amber-500">
+                  <div className="flex items-start gap-2">
+                    <span className="text-xs uppercase tracking-wider font-semibold text-amber-700 dark:text-amber-300 mt-0.5">Briefing</span>
+                  </div>
+                  <p className="mt-2 text-sm leading-relaxed text-ink-700 dark:text-ink-200">
+                    {assessment.commentary}
+                  </p>
+                  <p className="mt-2 text-[11px] text-ink-500 dark:text-ink-400 italic">
+                    Generated from the live indicator values shown below. Composite is a confidence-weighted
+                    bucket-risk average; warning signals flag any single indicator scoring ≥ 70/100 regardless of
+                    the composite.
+                  </p>
+                </div>
+              )}
               <RiskSummary assessment={assessment} country={country} sector={sector} />
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
                 <WarningSignals assessment={assessment} onPickSource={setDrawerInd} />
