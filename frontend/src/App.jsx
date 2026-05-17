@@ -12,10 +12,12 @@ import SourceDrawer from "./components/SourceDrawer";
 import MethodologyPage from "./components/MethodologyPage";
 import ReferencesPage from "./components/ReferencesPage";
 import Timeline from "./components/Timeline";
+import ComparisonView from "./components/ComparisonView";
 import { exportCsv, printPdf } from "./utils";
 
 const TABS = [
   { id: "overview", label: "Overview" },
+  { id: "compare", label: "Compare" },
   { id: "indicators", label: "Indicators & charts" },
   { id: "heatmap", label: "Heatmap" },
   { id: "news", label: "News & timeline" },
@@ -55,6 +57,21 @@ export default function App() {
   const [newsItems, setNewsItems] = useState([]);
   const [refreshing, setRefreshing] = useState(false);
   const [tab, setTab] = useState("overview");
+
+  // Comparison
+  const [compareCountries, setCompareCountries] = useState([]);
+  const [compareResult, setCompareResult] = useState(null);
+  const [compareLoading, setCompareLoading] = useState(false);
+  useEffect(() => {
+    if (tab !== "compare" || compareCountries.length < 2) {
+      setCompareResult(null);
+      return;
+    }
+    setCompareLoading(true);
+    api.compare({ countries: compareCountries, sector: filters.sector, toYear: filters.toYear })
+      .then((d) => { setCompareResult(d); setCompareLoading(false); })
+      .catch((e) => { console.error(e); setCompareLoading(false); });
+  }, [tab, compareCountries.join(","), filters.sector, filters.toYear]);
 
   // Source drawer
   const [drawerInd, setDrawerInd] = useState(null);
@@ -223,6 +240,17 @@ export default function App() {
               </div>
               <FullIndicatorTable assessment={assessment} onPickSource={setDrawerInd} />
             </>
+          )}
+
+          {tab === "compare" && (
+            <ComparisonView
+              countries={countries}
+              selected={compareCountries}
+              setSelected={setCompareCountries}
+              result={compareResult}
+              loading={compareLoading}
+              sectorLabel={sectors.find(s => s.code === filters.sector)?.name || filters.sector}
+            />
           )}
 
           {tab === "indicators" && country && (

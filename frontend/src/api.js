@@ -41,4 +41,6 @@ export const api = {
   sourcesLog: ({ limit }) => get("/api/sources/log", { limit }),
   sourcesSummary: () => get("/api/sources/summary"),
   refresh: () => post("/api/admin/refresh"),
+  compare: ({ countries, sector, toYear }) =>
+    get("/api/compare", { countries: countries.join(","), sector, to_year: toYear }),
 };
