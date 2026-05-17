@@ -231,12 +231,10 @@ export default function App() {
                 </div>
               )}
               <RiskSummary assessment={assessment} country={country} sector={sector} />
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 items-start">
                 <WarningSignals assessment={assessment} onPickSource={setDrawerInd} />
-                <div className="grid grid-cols-1 gap-4">
-                  <MovementPanel title="Deteriorating indicators" kind="deteriorating" assessment={assessment} onPickSource={setDrawerInd} />
-                  <MovementPanel title="Improving indicators" kind="improving" assessment={assessment} onPickSource={setDrawerInd} />
-                </div>
+                <MovementPanel title="Deteriorating indicators" kind="deteriorating" assessment={assessment} onPickSource={setDrawerInd} />
+                <MovementPanel title="Improving indicators" kind="improving" assessment={assessment} onPickSource={setDrawerInd} />
               </div>
               <FullIndicatorTable assessment={assessment} onPickSource={setDrawerInd} />
             </>
