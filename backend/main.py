@@ -21,6 +21,8 @@ from routers import news as news_router
 from routers import risk as risk_router
 from routers import sources as sources_router
 from routers import compare as compare_router
+from routers import peers as peers_router
+from routers import constellation as constellation_router
 from scheduler import kick_initial_refresh_if_empty, start_scheduler
 
 logging.basicConfig(
@@ -76,3 +78,5 @@ app.include_router(risk_router.router)
 app.include_router(news_router.router)
 app.include_router(sources_router.router)
 app.include_router(compare_router.router)
+app.include_router(peers_router.router)
+app.include_router(constellation_router.router)

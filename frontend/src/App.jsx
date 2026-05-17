@@ -13,6 +13,10 @@ import MethodologyPage from "./components/MethodologyPage";
 import ReferencesPage from "./components/ReferencesPage";
 import Timeline from "./components/Timeline";
 import ComparisonView from "./components/ComparisonView";
+import PeersCard from "./components/PeersCard";
+import SensitivityPanel from "./components/SensitivityPanel";
+import Watchlist from "./components/Watchlist";
+import ConstellationView from "./components/ConstellationView";
 import { exportCsv, printPdf, setIndicatorMetaCache } from "./utils";
 
 const TABS = [
@@ -20,6 +24,7 @@ const TABS = [
   { id: "compare", label: "Compare" },
   { id: "indicators", label: "Indicators & charts" },
   { id: "heatmap", label: "Heatmap" },
+  { id: "constellation", label: "Constellation" },
   { id: "news", label: "News & timeline" },
   { id: "references", label: "References" },
   { id: "methodology", label: "Methodology" },
@@ -231,6 +236,9 @@ export default function App() {
                 </div>
               )}
               <RiskSummary assessment={assessment} country={country} sector={sector} />
+              <Watchlist currentCountry={filters.country} sector={filters.sector} />
+              <SensitivityPanel assessment={assessment} />
+              <PeersCard country={filters.country} sector={filters.sector} />
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 items-start">
                 <WarningSignals assessment={assessment} onPickSource={setDrawerInd} />
                 <MovementPanel title="Deteriorating indicators" kind="deteriorating" assessment={assessment} onPickSource={setDrawerInd} />
@@ -276,6 +284,10 @@ export default function App() {
 
           {tab === "heatmap" && (
             <Heatmap countries={countries} indicatorsCatalog={indicatorsCatalog} selectedCodes={filters.indicators} />
+          )}
+
+          {tab === "constellation" && (
+            <ConstellationView sector={filters.sector} />
           )}
 
           {tab === "news" && (

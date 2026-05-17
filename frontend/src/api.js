@@ -32,8 +32,8 @@ export const api = {
   indicators: () => get("/api/filters/indicators"),
   series: ({ country, code, from, to }) =>
     get("/api/indicators/series", { country, code, from, to }),
-  heatmap: ({ countries, codes }) =>
-    get("/api/indicators/heatmap", { countries, codes }),
+  heatmap: ({ countries, codes, toYear }) =>
+    get("/api/indicators/heatmap", { countries, codes, to_year: toYear }),
   assess: ({ country, sector, indicators, toYear }) =>
     get("/api/risk/assess", { country, sector, indicators, to_year: toYear }),
   news: ({ country, keywords, limit }) =>
@@ -41,6 +41,10 @@ export const api = {
   sourcesLog: ({ limit }) => get("/api/sources/log", { limit }),
   sourcesSummary: () => get("/api/sources/summary"),
   refresh: () => post("/api/admin/refresh"),
+  peers: ({ country, sector, topN }) =>
+    get("/api/peers", { country, sector, top_n: topN }),
+  constellation: ({ sector }) =>
+    get("/api/constellation", { sector }),
   compare: ({ countries, sector, toYear }) =>
     get("/api/compare", { countries: countries.join(","), sector, to_year: toYear }),
 };

@@ -39,7 +39,17 @@ export default function Heatmap({ countries, indicatorsCatalog, selectedCodes })
   return (
     <div className="panel panel-pad overflow-x-auto">
       <div className="flex items-baseline justify-between mb-2">
+        <div className="flex items-center justify-between mb-3 flex-wrap gap-2">
         <h2 className="display text-lg">Risk heatmap</h2>
+        <div className="flex items-center gap-2 text-xs">
+          <label className="text-ink-500">As of:</label>
+          <input type="range" min="2000" max={currentYear} step="1" value={asOfYear}
+                 onChange={(e) => setAsOfYear(Number(e.target.value))}
+                 className="accent-amber-600 w-48" />
+          <span className="num font-semibold w-12 text-right">{asOfYear}</span>
+        </div>
+      </div>
+      <h2 style={{display:"none"}}>Risk heatmap</h2>
         <span className="text-xs text-ink-500">{visIso3s.length} countries × {visCodes.length} indicators</span>
       </div>
       <table className="text-xs min-w-full">

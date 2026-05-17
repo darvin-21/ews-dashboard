@@ -76,6 +76,7 @@ def get_series(
 def heatmap(
     countries: List[str] = Query(..., description="ISO3 codes"),
     codes: List[str] = Query(..., description="Indicator codes"),
+    to_year: Optional[int] = Query(None, description="As-of year cutoff"),
     db: Session = Depends(get_db),
 ):
     """Return a country x indicator matrix of the latest value + bucket risk."""
@@ -88,7 +89,7 @@ def heatmap(
             indicator = INDICATOR_BY_CODE.get(code)
             if not indicator:
                 continue
-            latest, _ = _latest_obs(db, c_iso, code)
+            latest, _ = _latest_obs(db, c_iso, code, to_year=to_year)
             if not latest or latest.value is None:
                 cells.append({
                     "country": c_iso,
