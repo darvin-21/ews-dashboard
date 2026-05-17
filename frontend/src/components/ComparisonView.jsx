@@ -1,4 +1,5 @@
 import React from "react";
+import InfoTip from "./InfoTip";
 import { bandColor, BAND_LABELS, fmt } from "../utils";
 
 function MiniGauge({ score, band }) {
@@ -157,7 +158,7 @@ export default function ComparisonView({
                 return (
                   <tr key={r.code} className="border-b border-ink-100 dark:border-ink-800">
                     <td className="py-2 pr-3">
-                      <div className="font-medium">{r.name}</div>
+                      <div className="font-medium">{r.name}<InfoTip code={r.code} /></div>
                       <div className="text-[10px] text-ink-500">{r.source}</div>
                     </td>
                     {items.map((a) => {

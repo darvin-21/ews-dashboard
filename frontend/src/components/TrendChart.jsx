@@ -1,3 +1,4 @@
+import InfoTip from "./InfoTip";
 import React, { useEffect, useState } from "react";
 import {
   LineChart, Line, XAxis, YAxis, Tooltip, CartesianGrid, ResponsiveContainer, ReferenceLine,
@@ -19,13 +20,13 @@ export default function TrendChart({ country, indicator, fromYear, toYear }) {
   }, [country.iso3, indicator.code, fromYear, toYear]);
 
   if (err) return <div className="panel panel-pad text-sm text-red-600">Error: {err}</div>;
-  if (!data) return <div className="panel panel-pad text-sm text-ink-500">Loading {indicator.name}…</div>;
+  if (!data) return <div className="panel panel-pad text-sm text-ink-500">Loading {indicator.name}<InfoTip code={indicator.code} />…</div>;
 
   if (!data.available) {
     return (
       <div className="panel panel-pad">
         <div className="flex items-baseline justify-between">
-          <h3 className="display text-base">{indicator.name}</h3>
+          <h3 className="display text-base">{indicator.name}<InfoTip code={indicator.code} /></h3>
           <span className="text-[10px] text-ink-400">{indicator.source}</span>
         </div>
         <p className="text-sm text-ink-500 italic mt-2">
@@ -45,7 +46,7 @@ export default function TrendChart({ country, indicator, fromYear, toYear }) {
     <div className="panel panel-pad">
       <div className="flex items-baseline justify-between gap-2">
         <div>
-          <h3 className="display text-base">{indicator.name}</h3>
+          <h3 className="display text-base">{indicator.name}<InfoTip code={indicator.code} /></h3>
           <p className="text-[11px] text-ink-500">
             {indicator.source} · {data.indicator.frequency} · {data.indicator.category}
           </p>

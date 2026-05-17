@@ -84,3 +84,39 @@ export function timeAgo(iso) {
   const d = Math.round(h / 24);
   return `${d}d ago`;
 }
+
+// ---------- Indicator metadata cache (populated by App.jsx on load) ----------
+let _indicatorMetaCache = {};
+export function setIndicatorMetaCache(items) {
+  _indicatorMetaCache = {};
+  for (const i of items || []) _indicatorMetaCache[i.code] = i;
+}
+export function getIndicatorMeta(code) {
+  return _indicatorMetaCache[code] || null;
+}
+
+const DIRECTION_LABEL = {
+  higher_is_riskier: "Higher values signal more risk",
+  lower_is_riskier: "Lower values signal more risk",
+};
+const SOURCE_LABEL = {
+  WORLD_BANK: "World Bank WDI", IMF: "IMF DataMapper",
+  FRED: "FRED (St. Louis Fed)", ECB: "ECB Data Warehouse",
+  BIS: "BIS Statistics", OECD: "OECD Data",
+};
+
+export function indicatorTooltip(code) {
+  const m = getIndicatorMeta(code);
+  if (!m) return null;
+  return {
+    name: m.name,
+    notes: m.notes || "",
+    source: SOURCE_LABEL[m.source] || m.source,
+    sourceCode: m.source,
+    frequency: m.frequency,
+    unit: m.unit,
+    directionText: DIRECTION_LABEL[m.direction] || "",
+    buckets: m.buckets || [],
+    seriesId: m.source_series_id,
+  };
+}

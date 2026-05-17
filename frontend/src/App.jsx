@@ -13,7 +13,7 @@ import MethodologyPage from "./components/MethodologyPage";
 import ReferencesPage from "./components/ReferencesPage";
 import Timeline from "./components/Timeline";
 import ComparisonView from "./components/ComparisonView";
-import { exportCsv, printPdf } from "./utils";
+import { exportCsv, printPdf, setIndicatorMetaCache } from "./utils";
 
 const TABS = [
   { id: "overview", label: "Overview" },
@@ -85,7 +85,7 @@ export default function App() {
         setCountries(c.items);
         setSectors(s.items);
         setRiskCategories(r.items);
-        setIndicatorsCatalog(i.items);
+        setIndicatorsCatalog(i.items); setIndicatorMetaCache(i.items);
         setSourcesSummary(summary);
       })
       .catch(console.error);

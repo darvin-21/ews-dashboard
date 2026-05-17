@@ -1,3 +1,4 @@
+import InfoTip from "./InfoTip";
 import React from "react";
 import { fmt } from "../utils";
 
@@ -120,7 +121,7 @@ export function FullIndicatorTable({ assessment, onPickSource }) {
         ) : (
           <div key={i.code} className="grid grid-cols-12 gap-2 items-center px-3 py-2 border-b border-ink-100 dark:border-ink-700 last:border-b-0 text-sm bg-ink-50/40 dark:bg-ink-900/40">
             <div className="col-span-5">
-              <div className="text-ink-500 dark:text-ink-400">{i.name}</div>
+              <div className="text-ink-500 dark:text-ink-400">{i.name}<InfoTip code={i.code} /></div>
               <div className="text-[10px] text-ink-400">{i.source}</div>
             </div>
             <div className="col-span-6 text-sm text-ink-500 italic">
