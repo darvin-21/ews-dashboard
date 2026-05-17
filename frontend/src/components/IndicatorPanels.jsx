@@ -13,7 +13,7 @@ function IndicatorRow({ ind, onPickSource }) {
   return (
     <div className="grid grid-cols-12 gap-2 items-center px-3 py-2 border-b border-ink-100 dark:border-ink-700 last:border-b-0 text-sm">
       <div className="col-span-5">
-        <div className="font-medium text-ink-700 dark:text-ink-100">{ind.name}</div>
+        <div className="font-medium text-ink-700 dark:text-ink-100">{ind.name}<InfoTip code={ind.code} /></div>
         <div className="text-[10px] text-ink-400">{ind.category} · {ind.source}</div>
       </div>
       <div className="col-span-2 num">{v}</div>
